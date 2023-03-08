@@ -27,7 +27,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "xyz.archgrid.comic_viewer",
       "targets": "all"
     },
     "security": {
@@ -40,8 +40,8 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "comic_viewer",
-        "width": 800,
+        "title": "漫画浏览器",
+        "width": 1000,
         "height": 600
       }
     ]
