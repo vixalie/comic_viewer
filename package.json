@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "tauri-dev": "tauri dev",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "tauri-dev": "tauri dev"
+    "tauri": "tauri"
   },
   "dependencies": {
     "@emotion/css": "^11.10.6",
