@@ -2,21 +2,19 @@ import { SyncObjectCallback } from '../types';
 import { createStoreHook } from '../utils/store_creator';
 
 interface ZoomState {
-  lock: boolean;
   autoFit: boolean;
   currentZoom: number;
-  viewMode: 'single' | 'double' | 'continuation';
+  viewMode: 'single' | 'continuation';
   viewHeight: number;
 }
 
 type ZoomActions = {
   zoom: SyncObjectCallback<number>;
   updateViewHeight: SyncObjectCallback<number>;
-  switchViewMode: SyncObjectCallback<'single' | 'double' | 'continuation'>;
+  switchViewMode: SyncObjectCallback<'single' | 'continuation'>;
 };
 
 const initialState: ZoomState = {
-  lock: true,
   autoFit: false,
   currentZoom: 80,
   viewMode: 'continuation',
