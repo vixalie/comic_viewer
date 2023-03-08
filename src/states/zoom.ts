@@ -12,6 +12,7 @@ interface ZoomState {
 type ZoomActions = {
   zoom: SyncObjectCallback<number>;
   updateViewHeight: SyncObjectCallback<number>;
+  switchViewMode: SyncObjectCallback<'single' | 'double' | 'continuation'>;
 };
 
 const initialState: ZoomState = {
@@ -32,6 +33,11 @@ export const useZoomState = createStoreHook<ZoomState & ZoomActions>(set => ({
   updateViewHeight(height) {
     set(df => {
       df.viewHeight = height;
+    });
+  },
+  switchViewMode(mode) {
+    set(df => {
+      df.viewMode = mode;
     });
   }
 }));

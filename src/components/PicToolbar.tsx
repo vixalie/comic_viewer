@@ -18,7 +18,7 @@ import { FC, useRef } from 'react';
 import { useZoomState } from '../states/zoom';
 
 export const PicToolbar: FC = () => {
-  const { lock, autoFit, currentZoom, viewMode, zoom } = useZoomState();
+  const { lock, autoFit, currentZoom, viewMode, zoom, switchViewMode } = useZoomState();
   const zoomHandlers = useRef<NumberInputHandlers>();
 
   return (
@@ -67,6 +67,7 @@ export const PicToolbar: FC = () => {
         <SegmentedControl
           size="xs"
           value={viewMode}
+          onChange={value => switchViewMode(value)}
           color="grape"
           data={[
             { label: '单页', value: 'single' },
