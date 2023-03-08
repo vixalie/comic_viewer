@@ -3,6 +3,7 @@ import { useColorScheme } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import React, { FC, useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import { eventBus, EventBusContext } from './EventBus';
 import { MainLayout } from './MainLayout';
 import { useAppTheme } from './theme';
 
@@ -13,12 +14,14 @@ const AppMain: FC = () => {
 
   return (
     <React.StrictMode>
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={setColorScheme}>
-        <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
-          <Notifications position="bottom-right" limit={5} zIndex={999} />
-          <MainLayout />
-        </MantineProvider>
-      </ColorSchemeProvider>
+      <EventBusContext.Provider value={eventBus}>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={setColorScheme}>
+          <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
+            <Notifications position="bottom-right" limit={5} zIndex={999} />
+            <MainLayout />
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </EventBusContext.Provider>
     </React.StrictMode>
   );
 };
