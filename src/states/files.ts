@@ -27,6 +27,7 @@ export const useFileListStore = createStoreHook<FileListState & FileListActions>
         (item, index) => mergeLeft({ sort: index * 10, path: convertFileSrc(item.path) }, item),
         files
       );
+      df.actives = [];
     });
   },
   updateActiveFiles(filenames) {
