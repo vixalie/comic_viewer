@@ -3,14 +3,12 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import EventEmitter from 'events';
 import { filter, indexOf, isEmpty, length, map, pluck } from 'ramda';
 import { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { useUpdate } from 'react-use';
 import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
 import { withinRange } from '../utils/offset_func';
 
 export const ContinuationView: FC = () => {
-  const forceRerender = useUpdate();
   const files = useFileListStore.use.files();
   const zoom = useZoomState.use.currentZoom();
   const viewHeight = useZoomState.use.viewHeight();
@@ -39,10 +37,6 @@ export const ContinuationView: FC = () => {
       ebus?.removeAllListeners('reset_views');
     };
   }, [ebus, files, virtualizer]);
-
-  useEffect(() => {
-    forceRerender();
-  }, [files]);
 
   useLayoutEffect(() => {
     let rangeStart = virtualizer.scrollOffset;
