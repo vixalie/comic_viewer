@@ -1,4 +1,5 @@
-import { addIndex, map, mergeRight } from 'ramda';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
+import { addIndex, map, mergeLeft } from 'ramda';
 import { FileItem } from '../models';
 import { SyncObjectCallback } from '../types';
 import { createStoreHook } from '../utils/store_creator';
@@ -23,7 +24,7 @@ export const useFileListStore = createStoreHook<FileListState & FileListActions>
   updateFiles(files) {
     set(df => {
       df.files = addIndex<Omit<FileItem, 'sort'>, FileItem>(map)(
-        (item, index) => mergeRight({ sort: index * 10 }, item),
+        (item, index) => mergeLeft({ sort: index * 10, path: convertFileSrc(item.path) }, item),
         files
       );
     });

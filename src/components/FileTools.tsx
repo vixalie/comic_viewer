@@ -15,6 +15,7 @@ export const FileToolbar: FC = () => {
         directory: true,
         multiple: false
       });
+      storeFiles([]);
       const files = await invoke('scan_directory', { target: directory });
       storeFiles(files);
     } catch (e) {

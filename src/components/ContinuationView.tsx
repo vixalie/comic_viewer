@@ -1,6 +1,5 @@
 import { Box, Stack } from '@mantine/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { filter, isEmpty, length, map, pluck } from 'ramda';
 import { FC, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFileListStore } from '../states/files';
@@ -50,7 +49,7 @@ export const ContinuationView: FC = () => {
             {items.map(row => (
               <img
                 key={files[row.index].filename}
-                src={convertFileSrc(files[row.index].path)}
+                src={files[row.index].path}
                 ref={virtualizer.measureElement}
                 data-index={row.index}
                 style={{ width: `${zoom}%` }}

@@ -17,7 +17,7 @@ type ZoomActions = {
 const initialState: ZoomState = {
   lock: true,
   autoFit: false,
-  currentZoom: 100,
+  currentZoom: 80,
   viewMode: 'continuation',
   viewHeight: 0
 };
