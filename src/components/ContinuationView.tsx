@@ -1,7 +1,9 @@
 import { Box, Stack } from '@mantine/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { filter, isEmpty, length, map, pluck } from 'ramda';
-import { FC, useLayoutEffect, useMemo, useRef } from 'react';
+import EventEmitter from 'events';
+import { filter, indexOf, isEmpty, length, map, pluck } from 'ramda';
+import { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
 import { withinRange } from '../utils/offset_func';
@@ -13,12 +15,24 @@ export const ContinuationView: FC = () => {
   const updateActives = useFileListStore.use.updateActiveFiles();
   const fileCount = useMemo(() => length(files), [files]);
   const parentRef = useRef();
+  const ebus = useContext<EventEmitter>(EventBusContext);
   const virtualizer = useVirtualizer({
     count: fileCount,
     getScrollElement: () => parentRef.current,
     estimateSize: () => zoom * 10
   });
   const items = virtualizer.getVirtualItems();
+
+  useEffect(() => {
+    ebus?.addListener('navigate_offset', ({ filename }) => {
+      let index = indexOf(filename, pluck('filename', files));
+      virtualizer.scrollToIndex(index);
+    });
+
+    return () => {
+      ebus?.removeAllListeners('navigate_offset');
+    };
+  }, [ebus, files, virtualizer]);
 
   useLayoutEffect(() => {
     let rangeStart = virtualizer.scrollOffset;

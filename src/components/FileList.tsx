@@ -1,11 +1,20 @@
 import { Box, Center, Text } from '@mantine/core';
-import { includes, isEmpty, map, pipe, sort } from 'ramda';
-import { FC } from 'react';
+import EventEmitter from 'events';
+import { includes, isEmpty, map, not, pipe, sort } from 'ramda';
+import { FC, useCallback, useContext } from 'react';
+import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
 
 export const FileList: FC = () => {
   const files = useFileListStore.use.files();
   const activeFiles = useFileListStore.use.actives();
+  const ebus = useContext<EventEmitter>(EventBusContext);
+  const handleFileSelectAction = useCallback(
+    (filename: string) => {
+      ebus.emit('navigate_offset', { filename });
+    },
+    [ebus]
+  );
 
   return (
     <Box w="100%" h="100%" pl={4} sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'hidden' }}>
@@ -17,6 +26,11 @@ export const FileList: FC = () => {
             key={item.filename}
             px={4}
             py={2}
+            onClick={() => handleFileSelectAction(item.filename)}
+            sx={theme => ({
+              cursor: 'pointer',
+              '&:hover': { color: not(includes(item.filename, activeFiles)) && theme.colors.red }
+            })}
           >
             {item.filename}
           </Box>
