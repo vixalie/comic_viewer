@@ -1,5 +1,11 @@
 use tauri::{App, AppHandle, Runtime, Window};
 
+mod files;
+
+pub mod prelude {
+    pub use super::files::*;
+}
+
 /// 用于持有应用实例，可存放不同的应用实例。
 pub enum AppHold<'a, R: Runtime> {
     Instance(&'a App<R>),

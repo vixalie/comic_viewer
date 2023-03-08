@@ -1,15 +1,17 @@
-import { Box, Group } from "@mantine/core";
-import { FC } from "react";
-import { Outlet } from "react-router-dom";
-import { NavMenu } from "./NavMenu";
+import { Group, Stack } from '@mantine/core';
+import { FC } from 'react';
+import { ComicView } from './components/ComicView';
+import { PicToolbar } from './components/PicToolbar';
+import { NavMenu } from './NavMenu';
 
 export const MainLayout: FC = () => {
   return (
     <Group grow noWrap spacing={0} h="100%" w="100%">
       <NavMenu />
-      <Box h="inherit" w="inherit" maw="100%" sx={{ flexGrow: 5 }}>
-        <Outlet />
-      </Box>
+      <Stack h="inherit" w="inherit" maw="100%" sx={{ flexGrow: 5 }} spacing={0}>
+        <PicToolbar />
+        <ComicView />
+      </Stack>
     </Group>
   );
 };
