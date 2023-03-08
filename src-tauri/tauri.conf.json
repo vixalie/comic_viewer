@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "comic_viewer",
-    "version": "0.0.0"
+    "productName": "漫画阅读器",
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -64,9 +64,9 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "漫画浏览器",
+        "title": "漫画阅读器",
         "width": 1000,
-        "height": 600
+        "height": 800
       }
     ]
   }
