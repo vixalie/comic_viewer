@@ -10,7 +10,7 @@ pub struct FileItem {
 
 #[tauri::command]
 pub fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
-    WalkDir::new(target)
+    let mut file_items = WalkDir::new(target)
         .into_iter()
         .filter_map(|f| f.ok())
         .filter(|f| f.path().is_file())
@@ -32,5 +32,8 @@ pub fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
             })
         })
         .collect::<Result<Vec<FileItem>, anyhow::Error>>()
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
+    file_items.sort_by(|a, b| a.filename.partial_cmp(&b.filename).unwrap());
+
+    Ok(file_items)
 }
