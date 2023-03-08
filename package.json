@@ -21,8 +21,9 @@
     "@mantine/notifications": "^6.0.0",
     "@mantine/nprogress": "^6.0.0",
     "@tabler/icons-react": "^2.8.0",
-    "@tauri-apps/api": "^1.2.0",
     "@tanstack/react-virtual": "3.0.0-beta.35",
+    "@tauri-apps/api": "^1.2.0",
+    "events": "^3.3.0",
     "framer-motion": "^8.1.1",
     "immer": "^9.0.17",
     "ramda": "^0.28.0",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@tauri-apps/cli": "^1.2.2",
+    "@types/events": "^3.0.0",
     "@types/node": "^18.7.10",
     "@types/ramda": "^0.28.20",
     "@types/react": "^18.0.15",
