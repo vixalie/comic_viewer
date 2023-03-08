@@ -13,6 +13,22 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "fs": {
+        "all": false,
+        "copyFile": false,
+        "createDir": false,
+        "exists": false,
+        "readDir": false,
+        "readFile": true,
+        "removeDir": false,
+        "removeFile": false,
+        "renameFile": false,
+        "scope": [],
+        "writeFile": false
+      },
+      "protocol": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": true
@@ -39,7 +55,7 @@
       "targets": "all"
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
     },
     "updater": {
       "active": false

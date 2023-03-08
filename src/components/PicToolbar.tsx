@@ -1,4 +1,12 @@
-import { ActionIcon, Group, NumberInput, rem, SegmentedControl, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Group,
+  NumberInput,
+  NumberInputHandlers,
+  rem,
+  SegmentedControl,
+  Tooltip
+} from '@mantine/core';
 import {
   IconArrowAutofitWidth,
   IconLock,
@@ -6,11 +14,12 @@ import {
   IconZoomIn,
   IconZoomOut
 } from '@tabler/icons-react';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import { useZoomState } from '../states/zoom';
 
 export const PicToolbar: FC = () => {
-  const { lock, autoFit, currentZoom, viewMode } = useZoomState();
+  const { lock, autoFit, currentZoom, viewMode, zoom } = useZoomState();
+  const zoomHandlers = useRef<NumberInputHandlers>();
 
   return (
     <Group w="100%" position="right" spacing={8} px={4} py={4}>
@@ -25,7 +34,11 @@ export const PicToolbar: FC = () => {
         </ActionIcon>
       </Tooltip>
       <Tooltip label="缩小">
-        <ActionIcon variant="subtle" color="grape">
+        <ActionIcon
+          variant="subtle"
+          color="grape"
+          onClick={() => zoomHandlers.current?.decrement()}
+        >
           <IconZoomOut stroke={1.5} size={24} />
         </ActionIcon>
       </Tooltip>
@@ -36,11 +49,17 @@ export const PicToolbar: FC = () => {
         max={100}
         step={5}
         value={currentZoom}
+        onChange={value => zoom(value)}
+        handlersRef={zoomHandlers}
         styles={{ input: { width: rem(58), textAlign: 'center' } }}
         rightSection={<IconPercentage stroke={1.5} size={16} />}
       />
       <Tooltip label="放大">
-        <ActionIcon variant="subtle" color="grape">
+        <ActionIcon
+          variant="subtle"
+          color="grape"
+          onClick={() => zoomHandlers.current?.increment()}
+        >
           <IconZoomIn stroke={1.5} size={24} />
         </ActionIcon>
       </Tooltip>

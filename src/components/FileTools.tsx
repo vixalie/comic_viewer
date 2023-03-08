@@ -16,7 +16,6 @@ export const FileToolbar: FC = () => {
         multiple: false
       });
       const files = await invoke('scan_directory', { target: directory });
-      console.log('[debug]file list: ', files);
       storeFiles(files);
     } catch (e) {
       console.error('[error]打开文件夹', e);

@@ -5,14 +5,17 @@ import { createStoreHook } from '../utils/store_creator';
 
 interface FileListState {
   files: FileItem[];
+  actives: string[];
 }
 
 type FileListActions = {
   updateFiles: SyncObjectCallback<Omit<FileItem, 'sort'>[]>;
+  updateActiveFiles: SyncObjectCallback<string[]>;
 };
 
 const initialState: FileListState = {
-  files: []
+  files: [],
+  actives: []
 };
 
 export const useFileListStore = createStoreHook<FileListState & FileListActions>(set => ({
@@ -23,6 +26,11 @@ export const useFileListStore = createStoreHook<FileListState & FileListActions>
         (item, index) => mergeRight({ sort: index * 10 }, item),
         files
       );
+    });
+  },
+  updateActiveFiles(filenames) {
+    set(df => {
+      df.actives = filenames;
     });
   }
 }));

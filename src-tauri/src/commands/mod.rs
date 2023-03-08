@@ -7,6 +7,7 @@ pub mod prelude {
 }
 
 /// 用于持有应用实例，可存放不同的应用实例。
+#[allow(dead_code)]
 pub enum AppHold<'a, R: Runtime> {
     Instance(&'a App<R>),
     Handle(&'a AppHandle<R>),
