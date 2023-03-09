@@ -1,13 +1,11 @@
-import { Box, Stack } from '@mantine/core';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import EventEmitter from 'events';
-import { filter, indexOf, isEmpty, length, map, pluck } from 'ramda';
-import { FC, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+import { indexOf, isEmpty, length, map, mergeLeft, pluck, range } from 'ramda';
+import { FC, useCallback, useContext, useMemo, useRef } from 'react';
 import { useLifecycles } from 'react-use';
+import { VariableSizeList } from 'react-window';
 import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
-import { withinRange } from '../utils/offset_func';
 
 export const ContinuationView: FC = () => {
   const { files } = useFileListStore();
@@ -15,23 +13,24 @@ export const ContinuationView: FC = () => {
   const viewHeight = useZoomState.use.viewHeight();
   const updateActives = useFileListStore.use.updateActiveFiles();
   const fileCount = useMemo(() => length(files), [files]);
-  const parentRef = useRef();
   const ebus = useContext<EventEmitter>(EventBusContext);
-  const virtualizer = useVirtualizer({
-    count: fileCount,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 100
-  });
-  const items = virtualizer.getVirtualItems();
+  const virtualListRef = useRef<VariableSizeList | null>();
+  const handleOnRenderAction = useCallback(
+    ({ visibleStartIndex, visibleStopIndex }) => {
+      console.log('[debug]on render:', visibleStartIndex, visibleStopIndex);
+      updateActives(map(i => files[i].filename, range(visibleStartIndex, visibleStopIndex + 1)));
+    },
+    [files]
+  );
 
   useLifecycles(
     () => {
       ebus?.addListener('navigate_offset', ({ filename }) => {
         let index = indexOf(filename, pluck('filename', files));
-        virtualizer.scrollToIndex(index);
+        virtualListRef.current?.scrollToItem(index);
       });
       ebus?.addListener('reset_views', () => {
-        virtualizer.scrollToOffset(0);
+        virtualListRef.current?.scrollTo(0);
       });
     },
     () => {
@@ -40,43 +39,37 @@ export const ContinuationView: FC = () => {
     }
   );
 
-  useLayoutEffect(() => {
-    let rangeStart = virtualizer.scrollOffset;
-    let rangeEnd = virtualizer.scrollOffset + viewHeight;
-    let onShowItems = pluck(
-      'index',
-      filter(item => withinRange(item.start, item.end, rangeStart, rangeEnd), items)
-    );
-    updateActives(map(i => files[i].filename, onShowItems));
-  }, [virtualizer.scrollOffset, viewHeight, items]);
-
   return (
-    <div style={{ overflow: 'auto', contain: 'strict', height: '100%' }} ref={parentRef}>
+    <div
+      style={{
+        overflow: 'auto',
+        contain: 'strict',
+        height: '100%'
+      }}
+    >
       {!isEmpty(files) && (
-        <Box pos="relative" w="100%" h={virtualizer.getTotalSize()}>
-          <Stack
-            pos="absolute"
-            top={0}
-            left={0}
-            w="100%"
-            justify="start"
-            align="center"
-            spacing={0}
-            style={{
-              transform: `translateY(${items[0].start}px)`
-            }}
-          >
-            {items.map(row => (
-              <img
-                key={files[row.index].filename}
-                src={files[row.index].path}
-                ref={virtualizer.measureElement}
-                data-index={row.index}
-                style={{ width: `${zoom}%` }}
-              />
-            ))}
-          </Stack>
-        </Box>
+        <VariableSizeList
+          itemData={files}
+          itemCount={fileCount}
+          itemSize={index => files[index].height * (zoom / 100)}
+          height={viewHeight}
+          width="100%"
+          ref={virtualListRef}
+          onItemsRendered={handleOnRenderAction}
+        >
+          {({ index, style, data }) => (
+            <div
+              style={mergeLeft(style, {
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'flex-start'
+              })}
+            >
+              <img src={data[index].path} style={{ width: data[index].width * (zoom / 100) }} />
+            </div>
+          )}
+        </VariableSizeList>
       )}
     </div>
   );

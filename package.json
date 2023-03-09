@@ -21,7 +21,6 @@
     "@mantine/notifications": "^6.0.0",
     "@mantine/nprogress": "^6.0.0",
     "@tabler/icons-react": "^2.8.0",
-    "@tanstack/react-virtual": "3.0.0-beta.35",
     "@tauri-apps/api": "^1.2.0",
     "events": "^3.3.0",
     "framer-motion": "^8.1.1",
@@ -30,6 +29,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use": "^17.4.0",
+    "react-window": "^1.8.8",
     "use-immer": "^0.8.1",
     "zustand": "^4.2.0"
   },
@@ -41,6 +41,7 @@
     "@types/ramda": "^0.28.20",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "@types/react-window": "^1.8.5",
     "@vitejs/plugin-react": "^3.0.0",
     "typescript": "^4.6.4",
     "vite": "^4.0.0"

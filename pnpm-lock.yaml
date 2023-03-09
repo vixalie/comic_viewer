@@ -12,7 +12,6 @@ specifiers:
   '@mantine/notifications': ^6.0.0
   '@mantine/nprogress': ^6.0.0
   '@tabler/icons-react': ^2.8.0
-  '@tanstack/react-virtual': 3.0.0-beta.35
   '@tauri-apps/api': ^1.2.0
   '@tauri-apps/cli': ^1.2.2
   '@types/events': ^3.0.0
@@ -20,6 +19,7 @@ specifiers:
   '@types/ramda': ^0.28.20
   '@types/react': ^18.0.15
   '@types/react-dom': ^18.0.6
+  '@types/react-window': ^1.8.5
   '@vitejs/plugin-react': ^3.0.0
   events: ^3.3.0
   framer-motion: ^8.1.1
@@ -28,6 +28,7 @@ specifiers:
   react: ^18.2.0
   react-dom: ^18.2.0
   react-use: ^17.4.0
+  react-window: ^1.8.8
   typescript: ^4.6.4
   use-immer: ^0.8.1
   vite: ^4.0.0
@@ -44,7 +45,6 @@ dependencies:
   '@mantine/notifications': 6.0.0_uziugpv5zwkk3pqsn64qbjkxrm
   '@mantine/nprogress': 6.0.0_uziugpv5zwkk3pqsn64qbjkxrm
   '@tabler/icons-react': 2.8.0_react@18.2.0
-  '@tanstack/react-virtual': 3.0.0-beta.35_react@18.2.0
   '@tauri-apps/api': 1.2.0
   events: 3.3.0
   framer-motion: 8.5.5_biqbaboplfbrettd7655fr4n2y
@@ -53,6 +53,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-use: 17.4.0_biqbaboplfbrettd7655fr4n2y
+  react-window: 1.8.8_biqbaboplfbrettd7655fr4n2y
   use-immer: 0.8.1_immer@9.0.19+react@18.2.0
   zustand: 4.3.6_immer@9.0.19+react@18.2.0
 
@@ -64,6 +65,7 @@ devDependencies:
   '@types/ramda': 0.28.23
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
+  '@types/react-window': 1.8.5
   '@vitejs/plugin-react': 3.1.0_vite@4.1.4
   typescript: 4.9.5
   vite: 4.1.4_@types+node@18.14.6
@@ -988,19 +990,6 @@ packages:
     resolution: {integrity: sha512-8diABuB3J+NEUtdwIXJF0bJSE5VpnnyzWeiZGFq/XlcTYJNEF+36ijiPNUGpsV/QXY6syesJKmmPkUUwD+LxdA==}
     dev: false
 
-  /@tanstack/react-virtual/3.0.0-beta.35_react@18.2.0:
-    resolution: {integrity: sha512-x4dicQTGao3p7wA1bGJyKsbtabO6UJKNUJdMWbxzrdc9CvpFl+ASOBtQHReDRjjAy7Z5/4loTLle8RtZu+2c2A==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@tanstack/virtual-core': 3.0.0-beta.35
-      react: 18.2.0
-    dev: false
-
-  /@tanstack/virtual-core/3.0.0-beta.35:
-    resolution: {integrity: sha512-p+dNBkN70nz3RzsfJImpmg1eoEHoX3X49lOk1N4I6jtUttKzZ/0U2+LqDmErNa5q/ksWD45zegOU4MnHwKRp2w==}
-    dev: false
-
   /@tauri-apps/api/1.2.0:
     resolution: {integrity: sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
@@ -1130,6 +1119,12 @@ packages:
 
   /@types/react-dom/18.0.11:
     resolution: {integrity: sha512-O38bPbI2CWtgw/OoQoY+BRelw7uysmXbWvw3nLWO21H1HSh+GOlqPuXshJfjmpNlKiiSDG9cc1JZAaMmVdcTlw==}
+    dependencies:
+      '@types/react': 18.0.28
+    dev: true
+
+  /@types/react-window/1.8.5:
+    resolution: {integrity: sha512-V9q3CvhC9Jk9bWBOysPGaWy/Z0lxYcTXLtLipkt2cnRj1JOSFNF7wqGpkScSXMgBwC+fnVRg/7shwgddBG5ICw==}
     dependencies:
       '@types/react': 18.0.28
     dev: true
@@ -1531,6 +1526,10 @@ packages:
     resolution: {integrity: sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow==}
     dev: false
 
+  /memoize-one/5.2.1:
+    resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
+    dev: false
+
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
@@ -1749,6 +1748,19 @@ packages:
       throttle-debounce: 3.0.1
       ts-easing: 0.2.0
       tslib: 2.5.0
+    dev: false
+
+  /react-window/1.8.8_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-D4IiBeRtGXziZ1n0XklnFGu7h9gU684zepqyKzgPNzrsrk7xOCxni+TCckjg2Nr/DiaEEGVVmnhYSlT2rB47dQ==}
+    engines: {node: '>8.0.0'}
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      memoize-one: 5.2.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react/18.2.0:
