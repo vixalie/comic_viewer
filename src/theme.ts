@@ -2,16 +2,18 @@ import { MantineTheme } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { ifElse, path, propEq } from 'ramda';
 
-const bgColorSelectFn = ifElse(
-  propEq('colorScheme', 'light'),
-  path(['colors', 'cbg', 8]),
-  path(['colors', 'cbg', 0])
-);
-const fgColorSelectFn = ifElse(
-  propEq('colorScheme', 'light'),
-  path(['colors', 'cfg', 0]),
-  path(['colors', 'cfg', 8])
-);
+const bgColorSelectFn = (lightIndex: number, darkIndex: number) =>
+  ifElse(
+    propEq('colorScheme', 'light'),
+    path(['colors', 'cbg', lightIndex]),
+    path(['colors', 'cbg', darkIndex])
+  );
+const fgColorSelectFn = (lightIndex: number, darkIndex: number) =>
+  ifElse(
+    propEq('colorScheme', 'light'),
+    path(['colors', 'cfg', lightIndex]),
+    path(['colors', 'cfg', darkIndex])
+  );
 
 export function useAppTheme(): Partial<MantineTheme> {
   const colorScheme = useColorScheme();
@@ -50,11 +52,23 @@ export function useAppTheme(): Partial<MantineTheme> {
     globalStyles: theme => ({
       'html, body': {
         height: '100vh',
-        color: fgColorSelectFn(theme),
-        backgroundColor: bgColorSelectFn(theme)
+        color: fgColorSelectFn(0, 8)(theme),
+        backgroundColor: bgColorSelectFn(8, 0)(theme)
       },
       '#root': {
         height: '100%'
+      },
+      '::-webkit-scrollbar': {
+        width: 4,
+        backgroundColor: bgColorSelectFn(6, 2)(theme)
+      },
+      '::-webkit-scrollbar-track': {
+        borderRadius: 2,
+        backgroundColor: 'transparent'
+      },
+      '::-webkit-scrollbar-thumb': {
+        borderRadius: 2,
+        backgroundColor: bgColorSelectFn(4, 4)(theme)
       }
     })
   };
