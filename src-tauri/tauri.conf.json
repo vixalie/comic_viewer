@@ -51,7 +51,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "xyz.archgrid.comic_viewer",
+      "identifier": "xyz.archgrid.comic-viewer",
       "targets": "all"
     },
     "security": {
