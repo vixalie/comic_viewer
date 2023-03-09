@@ -1,8 +1,7 @@
 //@ts-nocheck
 import EventEmitter from 'events';
 import { indexOf, isEmpty, length, map, mergeLeft, pluck, range } from 'ramda';
-import { FC, useCallback, useContext, useMemo, useRef } from 'react';
-import { useLifecycles } from 'react-use';
+import { FC, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { VariableSizeList } from 'react-window';
 import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
@@ -23,21 +22,21 @@ export const ContinuationView: FC = () => {
     [files]
   );
 
-  useLifecycles(
-    () => {
-      ebus?.addListener('navigate_offset', ({ filename }) => {
-        let index = indexOf(filename, pluck('filename', files));
-        virtualListRef.current?.scrollToItem(index);
-      });
-      ebus?.addListener('reset_views', () => {
-        virtualListRef.current?.scrollTo(0);
-      });
-    },
-    () => {
+  useEffect(() => {
+    ebus?.addListener('navigate_offset', ({ filename }) => {
+      let index = indexOf(filename, pluck('filename', files));
+      console.log('[debug]filenames', pluck('filename', files));
+      console.log('[debug]navigate: ', filename, index);
+      virtualListRef.current?.scrollToItem(index);
+    });
+    ebus?.addListener('reset_views', () => {
+      virtualListRef.current?.scrollTo(0);
+    });
+    return () => {
       ebus?.removeAllListeners('navigate_offset');
       ebus?.removeAllListeners('reset_views');
-    }
-  );
+    };
+  }, [files]);
 
   return (
     <div
