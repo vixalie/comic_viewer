@@ -6,6 +6,8 @@ use walkdir::WalkDir;
 pub struct FileItem {
     pub filename: String,
     pub path: String,
+    pub height: u32,
+    pub width: u32,
 }
 
 #[tauri::command]
@@ -15,6 +17,7 @@ pub fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
         .filter_map(|f| f.ok())
         .filter(|f| f.path().is_file())
         .map(|f| {
+            let (width, height) = image::image_dimensions(f.path())?;
             Ok(FileItem {
                 filename: f
                     .path()
@@ -29,6 +32,8 @@ pub fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
                     .to_str()
                     .ok_or(anyhow!("不能获取到文件路径。"))?
                     .to_string(),
+                width,
+                height,
             })
         })
         .collect::<Result<Vec<FileItem>, anyhow::Error>>()

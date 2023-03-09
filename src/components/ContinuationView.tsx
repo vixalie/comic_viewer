@@ -2,14 +2,15 @@ import { Box, Stack } from '@mantine/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import EventEmitter from 'events';
 import { filter, indexOf, isEmpty, length, map, pluck } from 'ramda';
-import { FC, useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { FC, useContext, useLayoutEffect, useMemo, useRef } from 'react';
+import { useLifecycles } from 'react-use';
 import { EventBusContext } from '../EventBus';
 import { useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
 import { withinRange } from '../utils/offset_func';
 
 export const ContinuationView: FC = () => {
-  const files = useFileListStore.use.files();
+  const { files } = useFileListStore();
   const zoom = useZoomState.use.currentZoom();
   const viewHeight = useZoomState.use.viewHeight();
   const updateActives = useFileListStore.use.updateActiveFiles();
@@ -23,20 +24,21 @@ export const ContinuationView: FC = () => {
   });
   const items = virtualizer.getVirtualItems();
 
-  useEffect(() => {
-    ebus?.addListener('navigate_offset', ({ filename }) => {
-      let index = indexOf(filename, pluck('filename', files));
-      virtualizer.scrollToIndex(index);
-    });
-    ebus?.addListener('reset_views', () => {
-      virtualizer.scrollToOffset(0);
-    });
-
-    return () => {
+  useLifecycles(
+    () => {
+      ebus?.addListener('navigate_offset', ({ filename }) => {
+        let index = indexOf(filename, pluck('filename', files));
+        virtualizer.scrollToIndex(index);
+      });
+      ebus?.addListener('reset_views', () => {
+        virtualizer.scrollToOffset(0);
+      });
+    },
+    () => {
       ebus?.removeAllListeners('navigate_offset');
       ebus?.removeAllListeners('reset_views');
-    };
-  }, [ebus, files, virtualizer]);
+    }
+  );
 
   useLayoutEffect(() => {
     let rangeStart = virtualizer.scrollOffset;
