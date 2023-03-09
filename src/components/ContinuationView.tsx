@@ -17,7 +17,6 @@ export const ContinuationView: FC = () => {
   const virtualListRef = useRef<VariableSizeList | null>();
   const handleOnRenderAction = useCallback(
     ({ visibleStartIndex, visibleStopIndex }) => {
-      console.log('[debug]on render:', visibleStartIndex, visibleStopIndex);
       updateActives(map(i => files[i].filename, range(visibleStartIndex, visibleStopIndex + 1)));
     },
     [files]
