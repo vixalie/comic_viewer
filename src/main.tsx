@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';

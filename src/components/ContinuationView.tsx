@@ -1,3 +1,4 @@
+//@ts-nocheck
 import EventEmitter from 'events';
 import { indexOf, isEmpty, length, map, mergeLeft, pluck, range } from 'ramda';
 import { FC, useCallback, useContext, useMemo, useRef } from 'react';

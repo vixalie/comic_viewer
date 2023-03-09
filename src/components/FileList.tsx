@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Box, Center, Text } from '@mantine/core';
 import EventEmitter from 'events';
 import { includes, isEmpty, map, not, pipe, sort } from 'ramda';

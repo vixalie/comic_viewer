@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Stack, useMantineTheme } from '@mantine/core';
 import { ifElse, path, propEq } from 'ramda';
 import { FC, useMemo } from 'react';

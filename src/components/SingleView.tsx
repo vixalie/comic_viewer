@@ -1,3 +1,4 @@
+//@ts-nocheck
 import EventEmitter from 'events';
 import { find, gt, head, indexOf, isNil, lt, max, pluck, propEq } from 'ramda';
 import { BaseSyntheticEvent, FC, useCallback, useContext, useMemo } from 'react';

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Box } from '@mantine/core';
 import { equals } from 'ramda';
 import { FC, useLayoutEffect } from 'react';

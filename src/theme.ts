@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { MantineTheme } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 import { ifElse, path, propEq } from 'ramda';

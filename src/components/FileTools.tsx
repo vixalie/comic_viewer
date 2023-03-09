@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Button, Group, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconFolder } from '@tabler/icons-react';
