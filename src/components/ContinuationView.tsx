@@ -21,6 +21,7 @@ export const ContinuationView: FC = () => {
     },
     [files]
   );
+  const fileHeights = useMemo(() => map(item => item.height * (zoom / 100), files), [files, zoom]);
 
   useEffect(() => {
     ebus?.addListener('navigate_offset', ({ filename }) => {
@@ -48,7 +49,8 @@ export const ContinuationView: FC = () => {
         <VariableSizeList
           itemData={files}
           itemCount={fileCount}
-          itemSize={index => files[index].height * (zoom / 100)}
+          itemSize={index => fileHeights[index]}
+          itemKey={index => files[index].id}
           height={viewHeight}
           width="100%"
           ref={virtualListRef}

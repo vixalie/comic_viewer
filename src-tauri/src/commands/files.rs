@@ -4,6 +4,7 @@ use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct FileItem {
+    pub id: String,
     pub filename: String,
     pub path: String,
     pub height: u32,
@@ -19,6 +20,7 @@ pub fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
         .map(|f| {
             let (width, height) = image::image_dimensions(f.path())?;
             Ok(FileItem {
+                id: uuid::Uuid::new_v4().to_string(),
                 filename: f
                     .path()
                     .file_name()
