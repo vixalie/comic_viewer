@@ -1,5 +1,5 @@
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { addIndex, map, mergeLeft } from 'ramda';
+import { addIndex, map, mergeLeft, sort } from 'ramda';
 import { FileItem } from '../models';
 import { SyncObjectCallback } from '../types';
 import { createStoreHook } from '../utils/store_creator';
@@ -36,3 +36,7 @@ export const useFileListStore = createStoreHook<FileListState & FileListActions>
     });
   }
 }));
+
+export function sortedFilesSelector(): SyncObjectCallback<FileListState, FileItem[]> {
+  return state => sort((fa, fb) => fa.sort - fb.sort, state.files);
+}
