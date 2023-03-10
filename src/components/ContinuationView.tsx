@@ -4,11 +4,11 @@ import { indexOf, isEmpty, length, map, mergeLeft, pluck, range } from 'ramda';
 import { FC, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { VariableSizeList } from 'react-window';
 import { EventBusContext } from '../EventBus';
-import { useFileListStore } from '../states/files';
+import { sortedFilesSelector, useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
 
 export const ContinuationView: FC = () => {
-  const { files } = useFileListStore();
+  const files = useFileListStore(sortedFilesSelector());
   const zoom = useZoomState.use.currentZoom();
   const viewHeight = useZoomState.use.viewHeight();
   const updateActives = useFileListStore.use.updateActiveFiles();
