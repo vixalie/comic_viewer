@@ -52,7 +52,12 @@
         "icons/eyeicon.ico"
       ],
       "identifier": "xyz.archgrid.comic-viewer",
-      "targets": "all"
+      "targets": "all",
+      "windows": {
+        "wix": {
+          "language": "zh-CN"
+        }
+      }
     },
     "security": {
       "devCsp": "default-src 'self'; img-src 'self' asset: https://asset.localhost",
