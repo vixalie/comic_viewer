@@ -1,4 +1,4 @@
-use std::{error::Error, io::Cursor, path::Path};
+use std::{error::Error, fs, path::Path};
 
 use tauri::{
     http::{Request, Response, ResponseBuilder},
@@ -32,12 +32,11 @@ pub fn comic_protocol<R: Runtime>(
             .body(Vec::new());
     }
 
-    let content = image::io::Reader::open(path)?.decode()?;
-    let mut bytes: Vec<u8> = Vec::new();
-    content.write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)?;
+    let mimetype = mime_guess::from_path(path);
+    let content = fs::read(path)?;
 
     response_builder
-        .mimetype("image/png")
+        .mimetype(mimetype.first_or_text_plain().essence_str())
         .status(200)
-        .body(bytes)
+        .body(content)
 }
