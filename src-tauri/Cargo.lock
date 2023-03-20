@@ -326,11 +326,13 @@ dependencies = [
 
 [[package]]
 name = "comic_viewer"
-version = "0.0.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
  "image",
+ "md-5",
+ "mountpoints",
  "once_cell",
  "serde",
  "serde_json",
@@ -1591,6 +1593,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
+name = "md-5"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6365506850d44bff6e2fbcb5176cf63650e48bd45ef2fe2665ae1570e0f4b9ca"
+dependencies = [
+ "digest",
+]
+
+[[package]]
 name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1624,6 +1635,16 @@ dependencies = [
  "log",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.45.0",
+]
+
+[[package]]
+name = "mountpoints"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3090e3ea5226b07cedd89a57c735d3ed0374a84236a85529a1d8bfec98eb8ec5"
+dependencies = [
+ "libc",
+ "winapi",
 ]
 
 [[package]]

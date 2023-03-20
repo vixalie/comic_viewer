@@ -6,3 +6,13 @@ export type FileItem = {
   width: number;
   height: number;
 };
+
+export type DirItem = {
+  sort: number;
+  parent?: string;
+  id: string;
+  dirname: string;
+  path: string;
+  root: boolean;
+  expanded: boolean;
+};

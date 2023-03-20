@@ -1,9 +1,14 @@
 //@ts-nocheck
-import { Stack, useMantineTheme } from '@mantine/core';
+import { Stack, Tabs, useMantineTheme } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { IconFiles, IconFolders } from '@tabler/icons-react';
 import { ifElse, path, propEq } from 'ramda';
 import { FC, useMemo } from 'react';
+import { useMount } from 'react-use';
+import { DirTree } from './components/DirTree';
 import { FileList } from './components/FileList';
 import { FileToolbar } from './components/FileTools';
+import { loadDrives } from './queries/directories';
 
 const bgSelectFn = ifElse(
   propEq('colorScheme', 'dark'),
@@ -18,10 +23,18 @@ export const NavMenu: FC = () => {
   const disabledColor = useMemo(() => path<string>(['gray', 7])(theme.colors), [theme.colors]);
   const navMenuBg = useMemo(() => bgSelectFn(theme), [theme, theme]);
 
+  useMount(() => {
+    try {
+      loadDrives();
+    } catch (e) {
+      notifications.show({ message: `未能成功加载全部磁盘列表，${e.message}`, color: 'red' });
+    }
+  });
+
   return (
     <Stack
       spacing={8}
-      miw={200}
+      miw={220}
       h="inherit"
       sx={theme => ({
         flexGrow: 1,
@@ -32,8 +45,25 @@ export const NavMenu: FC = () => {
       py={4}
       align="center"
     >
-      <FileToolbar />
-      <FileList />
+      <Tabs defaultValue="folder" w="100%" h="100%">
+        <Tabs.List>
+          <Tabs.Tab value="folder" icon={<IconFolders stroke={1.5} size={16} />}>
+            文件夹
+          </Tabs.Tab>
+          <Tabs.Tab value="files" icon={<IconFiles stroke={1.5} size={16} />}>
+            文件列表
+          </Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="folder" h="100%">
+          <DirTree />
+        </Tabs.Panel>
+        <Tabs.Panel value="files" h="100%">
+          <Stack spacing={8} py={4} w="100%" h="100%" align="center">
+            <FileToolbar />
+            <FileList />
+          </Stack>
+        </Tabs.Panel>
+      </Tabs>
     </Stack>
   );
 };
