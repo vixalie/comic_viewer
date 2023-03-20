@@ -24,7 +24,8 @@ export const useFileListStore = createStoreHook<FileListState & FileListActions>
   updateFiles(files) {
     set(df => {
       df.files = addIndex<Omit<FileItem, 'sort'>, FileItem>(map)(
-        (item, index) => mergeLeft({ sort: index * 10, path: convertFileSrc(item.path) }, item),
+        (item, index) =>
+          mergeLeft({ sort: index * 10, path: convertFileSrc(item.path, 'comic') }, item),
         files
       );
       df.actives = [];

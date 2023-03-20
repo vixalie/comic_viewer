@@ -2,13 +2,16 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+mod protocol;
 mod utils;
 
 use commands::AppHold;
+use protocol::comic_protocol;
 use tauri::Manager;
 
 fn main() {
     tauri::Builder::default()
+        .register_uri_scheme_protocol("comic", comic_protocol)
         .invoke_handler(tauri::generate_handler![
             commands::prelude::scan_directory,
             commands::prelude::show_drives,
