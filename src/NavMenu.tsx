@@ -7,7 +7,6 @@ import { FC, useMemo } from 'react';
 import { useMount } from 'react-use';
 import { DirTree } from './components/DirTree';
 import { FileList } from './components/FileList';
-import { FileToolbar } from './components/FileTools';
 import { loadDrives } from './queries/directories';
 
 const bgSelectFn = ifElse(
@@ -59,7 +58,6 @@ export const NavMenu: FC = () => {
         </Tabs.Panel>
         <Tabs.Panel value="files" h="100%">
           <Stack spacing={8} py={4} w="100%" h="100%" align="center">
-            <FileToolbar />
             <FileList />
           </Stack>
         </Tabs.Panel>
