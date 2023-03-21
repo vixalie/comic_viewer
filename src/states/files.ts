@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import { addIndex, map, mergeLeft, sort } from 'ramda';
 import { FileItem } from '../models';

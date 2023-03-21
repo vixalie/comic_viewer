@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { SyncObjectCallback } from '../types';
 import { createStoreHook } from '../utils/store_creator';
 

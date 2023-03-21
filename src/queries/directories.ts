@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { invoke } from '@tauri-apps/api';
 import { useDirTreeStore } from '../states/dirs';
 

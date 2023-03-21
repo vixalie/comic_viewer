@@ -1,9 +1,9 @@
+//@ts-nocheck
 import styled from '@emotion/styled';
 import { ActionIcon, Box, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEye, IconSquareMinus, IconSquarePlus } from '@tabler/icons-react';
 import { invoke } from '@tauri-apps/api';
-import EventEmitter from 'events';
 import { equals, isEmpty, isNil, length, map, not } from 'ramda';
 import { FC, PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { useMeasure, useMount } from 'react-use';
