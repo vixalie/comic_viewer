@@ -146,7 +146,7 @@ pub async fn scan_for_child_dirs<R: Runtime>(
     for entry in std::fs::read_dir(target).map_err(|e| format!("无法读取指定文件夹，{}", e))?
     {
         let entry = entry.map_err(|e| format!("无法获取指定文件夹信息，{}", e))?;
-        if is_hidden(&entry) || is_root(&entry) {
+        if is_hidden(&entry) || is_root(&entry) || entry.path().is_file() {
             continue;
         }
         let dir_hash_id = entry
