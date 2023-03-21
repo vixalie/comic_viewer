@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Box, Center, Text } from '@mantine/core';
+import { Box, Center, Text, Tooltip } from '@mantine/core';
 import EventEmitter from 'events';
 import { head, includes, indexOf, isEmpty, length, mergeLeft, not, pluck } from 'ramda';
 import { FC, useCallback, useContext, useLayoutEffect, useMemo, useRef } from 'react';
@@ -54,7 +54,9 @@ export const FileList: FC = () => {
                 })
               }
             >
-              {files[index].filename}
+              <Tooltip label={files[index].filename}>
+                <Text truncate>{files[index].filename}</Text>
+              </Tooltip>
             </Box>
           )}
         </FixedSizeList>
