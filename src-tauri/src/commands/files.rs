@@ -106,7 +106,7 @@ pub async fn show_drives<R: Runtime>(
                     .into_string()
                     .unwrap();
                 #[cfg(target_os = "windows")]
-                let dirname = mount.path.clone().unwrap_or_default().display();
+                let dirname = mount.path.display().to_string();
                 let dirname = if dirname.len() == 0 {
                     String::from("/")
                 } else {
