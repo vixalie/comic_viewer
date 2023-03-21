@@ -96,6 +96,7 @@ pub async fn show_drives<R: Runtime>(
                 .iter()
                 .filter(|m| !m.path.starts_with("/System") && !m.path.starts_with("/dev"));
             for mount in mounts {
+                #[cfg(any(target_os = "macos", target_os = "linux"))]
                 let dirname = mount
                     .path
                     .as_path()
@@ -104,6 +105,8 @@ pub async fn show_drives<R: Runtime>(
                     .to_os_string()
                     .into_string()
                     .unwrap();
+                #[cfg(target_os = "windows")]
+                let dirname = mount.name.clone().unwrap_or_default();
                 let dirname = if dirname.len() == 0 {
                     String::from("/")
                 } else {
