@@ -1,10 +1,8 @@
-use std::path::Path;
+use std::{fs::DirEntry, path::Path};
 
-use anyhow::anyhow;
 use mountpoints::mountinfos;
 use serde::Serialize;
 use tauri::Runtime;
-use walkdir::{DirEntry, WalkDir};
 
 use crate::utils;
 
@@ -33,10 +31,6 @@ fn is_hidden(entry: &DirEntry) -> bool {
         .unwrap_or(false)
 }
 
-fn is_self<P: AsRef<Path>>(entry: &DirEntry, target: P) -> bool {
-    entry.path().eq(target.as_ref())
-}
-
 fn is_root(entry: &DirEntry) -> bool {
     entry
         .path()
@@ -47,43 +41,43 @@ fn is_root(entry: &DirEntry) -> bool {
 
 #[tauri::command]
 pub async fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
-    let mut file_items = WalkDir::new(target)
-        .max_depth(1)
-        .into_iter()
-        .filter_entry(|entry| !is_hidden(entry))
-        .filter_map(|f| f.ok())
-        .filter(|f| f.path().is_file())
-        .map(|f| {
-            let (width, height) = image::image_dimensions(f.path())?;
-            let file_hash_id = f
-                .path()
-                .to_str()
-                .map(crate::utils::md5_hash)
-                .map(|hash| utils::uuid_from(hash.as_slice()))
-                .transpose()
-                .map_err(|e| anyhow!(e))?
-                .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
-            Ok(FileItem {
-                id: file_hash_id,
-                filename: f
-                    .path()
-                    .file_name()
-                    .ok_or(anyhow!("不能获取到文件名。"))?
-                    .to_owned()
-                    .into_string()
-                    .unwrap(),
-                path: f
-                    .path()
-                    .clone()
-                    .to_str()
-                    .ok_or(anyhow!("不能获取到文件路径。"))?
-                    .to_string(),
-                width,
-                height,
-            })
-        })
-        .collect::<Result<Vec<FileItem>, anyhow::Error>>()
-        .map_err(|e| e.to_string())?;
+    let mut file_items: Vec<FileItem> = Vec::new();
+    for entry in std::fs::read_dir(target).map_err(|e| format!("无法读取指定文件夹，{}", e))?
+    {
+        let entry = entry.map_err(|e| format!("无法获取指定文件夹信息，{}", e))?;
+        if !entry.path().is_file() {
+            continue;
+        }
+        let (width, height) = image::image_dimensions(entry.path())
+            .map_err(|_e| format!("读取图片文件 {} 元信息失败。", entry.path().display()))?;
+        let file_hash_id = entry
+            .path()
+            .to_str()
+            .map(crate::utils::md5_hash)
+            .map(|hash| utils::uuid_from(hash.as_slice()))
+            .transpose()?
+            .unwrap_or(uuid::Uuid::new_v4().to_string());
+        let filename = entry
+            .path()
+            .file_name()
+            .ok_or(String::from("不能获取到文件名。"))?
+            .to_owned()
+            .into_string()
+            .unwrap();
+        let path = entry
+            .path()
+            .clone()
+            .to_str()
+            .ok_or(String::from("不能获取到文件路径。"))?
+            .to_string();
+        file_items.push(FileItem {
+            id: file_hash_id,
+            filename,
+            path,
+            height,
+            width,
+        });
+    }
     file_items.sort_by(|a, b| a.filename.partial_cmp(&b.filename).unwrap());
 
     Ok(file_items)
@@ -147,42 +141,41 @@ pub async fn scan_for_child_dirs<R: Runtime>(
     } else {
         Path::new(&target)
     };
-    let mut child_dirs = WalkDir::new(target)
-        .max_depth(1)
-        .into_iter()
-        .filter_entry(|entry| !is_hidden(entry) && !is_root(entry))
-        .filter_map(|d| d.ok())
-        .filter(|d| d.path().is_dir() && !is_self(d, target))
-        .map(|d| {
-            println!("扫描到的文件夹：{}", d.path().display());
-            let dir_hash_id = d
-                .path()
-                .to_str()
-                .map(crate::utils::md5_hash)
-                .map(|hash| utils::uuid_from(hash.as_slice()))
-                .transpose()
-                .map_err(|e| anyhow!(e))?
-                .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
-            Ok(DirItem {
-                id: dir_hash_id,
-                dirname: d
-                    .path()
-                    .file_name()
-                    .ok_or(anyhow!("不能获取到文件夹的名称。"))?
-                    .to_owned()
-                    .into_string()
-                    .unwrap(),
-                path: d
-                    .path()
-                    .clone()
-                    .to_str()
-                    .ok_or(anyhow!("不能获取到文件夹路径。"))?
-                    .to_string(),
-                root: false,
-            })
-        })
-        .collect::<Result<Vec<DirItem>, anyhow::Error>>()
-        .map_err(|e| e.to_string())?;
+
+    let mut child_dirs: Vec<DirItem> = Vec::new();
+    for entry in std::fs::read_dir(target).map_err(|e| format!("无法读取指定文件夹，{}", e))?
+    {
+        let entry = entry.map_err(|e| format!("无法获取指定文件夹信息，{}", e))?;
+        if is_hidden(&entry) || is_root(&entry) {
+            continue;
+        }
+        let dir_hash_id = entry
+            .path()
+            .to_str()
+            .map(crate::utils::md5_hash)
+            .map(|hash| utils::uuid_from(hash.as_slice()))
+            .transpose()?
+            .unwrap_or(uuid::Uuid::new_v4().to_string());
+        let dirname = entry
+            .path()
+            .file_name()
+            .ok_or(String::from("不能获取到文件夹的名称。"))?
+            .to_owned()
+            .into_string()
+            .unwrap();
+        let path = entry
+            .path()
+            .clone()
+            .to_str()
+            .ok_or(String::from("不能获取到文件夹路径。"))?
+            .to_string();
+        child_dirs.push(DirItem {
+            id: dir_hash_id,
+            dirname,
+            path,
+            root: false,
+        });
+    }
     child_dirs.sort_by(|a, b| a.dirname.partial_cmp(&b.dirname).unwrap());
     Ok(child_dirs)
 }
