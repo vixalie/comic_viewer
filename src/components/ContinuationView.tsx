@@ -1,35 +1,34 @@
 //@ts-nocheck
 import EventEmitter from 'events';
-import { indexOf, isEmpty, length, map, mergeLeft, pluck, range } from 'ramda';
+import { indexOf, isEmpty, length, map, pluck, range } from 'ramda';
 import { FC, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { VariableSizeList } from 'react-window';
+import { ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { EventBusContext } from '../EventBus';
 import { sortedFilesSelector, useFileListStore } from '../states/files';
 import { useZoomState } from '../states/zoom';
 
 export const ContinuationView: FC = () => {
   const files = useFileListStore(sortedFilesSelector());
-  const zoom = useZoomState.use.currentZoom();
-  const viewHeight = useZoomState.use.viewHeight();
+  const { currentZoom: zoom, viewWidth, viewHeight } = useZoomState();
   const updateActives = useFileListStore.use.updateActiveFiles();
   const fileCount = useMemo(() => length(files), [files]);
   const ebus = useContext<EventEmitter>(EventBusContext);
-  const virtualListRef = useRef<VariableSizeList | null>();
+  const virtualListRef = useRef<VirtuosoHandle | null>(null);
   const handleOnRenderAction = useCallback(
-    ({ visibleStartIndex, visibleStopIndex }) => {
-      updateActives(map(i => files[i].filename, range(visibleStartIndex, visibleStopIndex + 1)));
+    ({ startIndex, endIndex }: ListRange) => {
+      updateActives(map(i => files[i].filename, range(startIndex, endIndex + 1)));
     },
     [files]
   );
-  const fileHeights = useMemo(() => map(item => item.height * (zoom / 100), files), [files, zoom]);
+  const maxImageWidth = useMemo(() => viewWidth * (zoom / 100), [viewWidth, zoom]);
 
   useEffect(() => {
     ebus?.addListener('navigate_offset', ({ filename }) => {
       let index = indexOf(filename, pluck('filename', files));
-      virtualListRef.current?.scrollToItem(index);
+      virtualListRef.current?.scrollToIndex({ index, align: 'start', behavior: 'smooth' });
     });
     ebus?.addListener('reset_views', () => {
-      virtualListRef.current?.scrollTo(0);
+      virtualListRef.current?.scrollTo({ top: 0 });
     });
     return () => {
       ebus?.removeAllListeners('navigate_offset');
@@ -46,29 +45,27 @@ export const ContinuationView: FC = () => {
       }}
     >
       {!isEmpty(files) && (
-        <VariableSizeList
-          itemData={files}
-          itemCount={fileCount}
-          itemSize={index => fileHeights[index]}
-          itemKey={index => files[index].id}
-          height={viewHeight}
-          width="100%"
+        <Virtuoso
+          style={{ height: viewHeight }}
           ref={virtualListRef}
-          onItemsRendered={handleOnRenderAction}
-        >
-          {({ index, style, data }) => (
+          totalCount={fileCount}
+          computeItemKey={index => files[index].id}
+          rangeChanged={handleOnRenderAction}
+          itemContent={index => (
             <div
-              style={mergeLeft(style, {
+              style={{
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'center',
-                alignItems: 'flex-start'
-              })}
+                alignItems: 'flex-start',
+                width: '100%',
+                height: files[index].height * (maxImageWidth / files[index].width)
+              }}
             >
-              <img src={data[index].path} style={{ width: data[index].width * (zoom / 100) }} />
+              <img src={files[index].path} style={{ width: maxImageWidth }} />
             </div>
           )}
-        </VariableSizeList>
+        />
       )}
     </div>
   );
