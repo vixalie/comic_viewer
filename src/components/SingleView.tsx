@@ -10,8 +10,8 @@ import { useZoomState } from '../states/zoom';
 export const SingleView: FC = () => {
   const files = useFileListStore.use.files();
   const actives = useFileListStore.use.actives();
-  const zoom = useZoomState.use.currentZoom();
-  const viewHeight = useZoomState.use.viewHeight();
+  const { currentZoom: zoom, viewHeight, viewWidth } = useZoomState();
+  const maxImageWidth = useMemo(() => viewWidth * (zoom / 100), [viewWidth, zoom]);
   const updateActives = useFileListStore.use.updateActiveFiles();
   const ebus = useContext<EventEmitter>(EventBusContext);
   const [pageConRef, { width: pageConWidth }] = useMeasure();
@@ -21,9 +21,9 @@ export const SingleView: FC = () => {
   }, [files, actives]);
   const largerThanView = useMemo(() => {
     if (isNil(activeFile)) return false;
-    let imageHeightAfterZoom = activeFile?.height * (zoom / 100);
+    let imageHeightAfterZoom = activeFile?.height * (maxImageWidth / activeFile?.width);
     return gt(imageHeightAfterZoom, viewHeight);
-  }, [activeFile, viewHeight, zoom]);
+  }, [activeFile, viewHeight, maxImageWidth]);
   const handlePaginationAction = useCallback(
     (event: BaseSyntheticEvent) => {
       let middle = pageConWidth / 2;
@@ -62,7 +62,7 @@ export const SingleView: FC = () => {
             height: largerThanView ? '100%' : viewHeight
           }}
         >
-          <img src={activeFile.path} style={{ width: `${zoom}%` }} />
+          <img src={activeFile.path} style={{ width: maxImageWidth }} />
         </div>
       )}
     </div>

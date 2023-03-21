@@ -13,12 +13,16 @@ export const ComicView: FC = () => {
   const files = useFileListStore(sortedFilesSelector());
   const viewMode = useZoomState.use.viewMode();
   const updateViewHeight = useZoomState.use.updateViewHeight();
-  const [containerRef, { height }] = useMeasure();
+  const updateViewWidth = useZoomState.use.updateViewWidth();
+  const [containerRef, { height, width }] = useMeasure();
   const firstFileId = useMemo(() => head(files)?.id ?? '', [files, files.length]);
 
   useLayoutEffect(() => {
     updateViewHeight(height);
   }, [height]);
+  useLayoutEffect(() => {
+    updateViewWidth(width);
+  }, [width]);
 
   return (
     <Box w="100%" h="100%" sx={{ overflow: 'hidden' }} ref={containerRef}>
