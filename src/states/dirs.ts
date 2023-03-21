@@ -22,7 +22,7 @@ interface DirsStates {
   drives: DirItem[];
   directories: DirItem[];
   focused?: DirItem;
-  selected?: DirItem;
+  selected?: string;
   expanded: string[];
 }
 
@@ -91,6 +91,7 @@ export const useDirTreeStore = createStoreHook<DirsStates & DirsActions>((set, g
   },
   focus(specifiedDirId) {
     const requestedDir = find(propEq('id', specifiedDirId), get().directories);
+    console.log('[debug]focus search: ', specifiedDirId, requestedDir);
     if (not(isNil(requestedDir))) {
       set(df => {
         df.focused = requestedDir;
@@ -99,7 +100,7 @@ export const useDirTreeStore = createStoreHook<DirsStates & DirsActions>((set, g
   },
   unfocus() {
     set(df => {
-      df.focus = undefined;
+      df.focused = undefined;
     });
   },
   selectDirectory(dirId) {

@@ -1,11 +1,12 @@
 import styled from '@emotion/styled';
-import { ActionIcon, Flex, Stack, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconSquareMinus, IconSquarePlus } from '@tabler/icons-react';
+import { IconEye, IconSquareMinus, IconSquarePlus } from '@tabler/icons-react';
 import { invoke } from '@tauri-apps/api';
 import EventEmitter from 'events';
-import { equals, isEmpty, length, map, not } from 'ramda';
+import { equals, isEmpty, isNil, length, map, not } from 'ramda';
 import { FC, PropsWithChildren, useCallback, useContext, useState } from 'react';
+import { useMeasure, useMount } from 'react-use';
 import { EventBusContext } from '../EventBus';
 import { DirItem } from '../models';
 import { loadSubDirectories } from '../queries/directories';
@@ -43,6 +44,11 @@ const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = (
   const storeFiles = useFileListStore.use.updateFiles();
   const ebus = useContext<EventEmitter>(EventBusContext);
 
+  useMount(() => {
+    if (isCurrentExpanded) {
+      setSubDirs(selectDirectories(current.id)(useDirTreeStore.getState().directories));
+    }
+  });
   const handleExpandAction = useCallback(async () => {
     try {
       if (isCurrentExpanded) {
@@ -112,9 +118,41 @@ const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = (
 
 export const DirTree: FC = () => {
   const roots = useDirTreeStore(currentRootsSelector());
+  const { focused, focus, unfocus, selected } = useDirTreeStore();
+  const [viewRef, { width }] = useMeasure();
+
+  const handleFocusAction = useCallback(() => {
+    console.log('[debug]focus action: ', focused, selected);
+    if (isNil(focused) && not(isNil(selected))) {
+      focus(selected);
+    } else {
+      unfocus();
+    }
+  }, [focused, selected]);
 
   return (
-    <Stack w="auto" h="100%" spacing={8} px={4} py={4} sx={{ overflow: 'auto' }}>
+    <Stack
+      w="auto"
+      h="100%"
+      spacing={8}
+      px={4}
+      py={4}
+      pos="relative"
+      sx={{ overflow: 'auto' }}
+      ref={viewRef}
+    >
+      <Box pos="fixed" style={{ transform: `translateX(${width * 0.85}px)` }}>
+        <Tooltip label={isNil(focused) ? '聚焦当前选择的目录' : '解除聚焦'}>
+          <ActionIcon
+            variant="light"
+            color={isNil(focused) ? 'grape' : 'green'}
+            disabled={isNil(selected)}
+            onClick={handleFocusAction}
+          >
+            <IconEye stroke={1.5} size={16} />
+          </ActionIcon>
+        </Tooltip>
+      </Box>
       <Tree>
         {map(
           item => (
