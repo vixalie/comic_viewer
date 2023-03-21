@@ -20,7 +20,7 @@ export const ContinuationView: FC = () => {
     },
     [files]
   );
-  const maxImageWidth = useMemo(() => viewWidth * (zoom / 100), [viewWidth, zoom]);
+  const maxImageWidth = useMemo(() => Math.floor(viewWidth * (zoom / 100)), [viewWidth, zoom]);
 
   useEffect(() => {
     ebus?.addListener('navigate_offset', ({ filename }) => {
@@ -59,7 +59,7 @@ export const ContinuationView: FC = () => {
                 justifyContent: 'center',
                 alignItems: 'flex-start',
                 width: '100%',
-                height: files[index].height * (maxImageWidth / files[index].width)
+                height: Math.round(files[index].height * (maxImageWidth / files[index].width))
               }}
             >
               <img src={files[index].path} style={{ width: maxImageWidth }} />
