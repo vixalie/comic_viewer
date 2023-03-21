@@ -33,7 +33,8 @@ export const NavMenu: FC = () => {
   return (
     <Stack
       spacing={8}
-      miw={220}
+      w={300}
+      mw={200}
       h="inherit"
       sx={theme => ({
         flexGrow: 1,
