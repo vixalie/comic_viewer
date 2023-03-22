@@ -92,7 +92,6 @@ export const useDirTreeStore = createStoreHook<DirsStates & DirsActions>((set, g
   },
   focus(specifiedDirId) {
     const requestedDir = find(propEq('id', specifiedDirId), get().directories);
-    console.log('[debug]focus search: ', specifiedDirId, requestedDir);
     if (not(isNil(requestedDir))) {
       set(df => {
         df.focused = requestedDir;

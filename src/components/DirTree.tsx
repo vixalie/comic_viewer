@@ -4,16 +4,17 @@ import { ActionIcon, Box, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEye, IconSquareMinus, IconSquarePlus } from '@tabler/icons-react';
 import { invoke } from '@tauri-apps/api';
+import EventEmitter from 'events';
 import { equals, isEmpty, isNil, map, not } from 'ramda';
-import { FC, PropsWithChildren, useCallback, useContext, useState } from 'react';
-import { useMeasure, useMount } from 'react-use';
+import { FC, PropsWithChildren, useCallback, useContext } from 'react';
+import { useLifecycles, useMeasure } from 'react-use';
 import { EventBusContext } from '../EventBus';
 import { DirItem } from '../models';
 import { loadSubDirectories } from '../queries/directories';
 import {
   currentRootsSelector,
   isExpandedSelector,
-  selectDirectories,
+  subDirectoriesSelector,
   useDirTreeStore
 } from '../states/dirs';
 import { useFileListStore } from '../states/files';
@@ -30,12 +31,9 @@ const Tree = styled.ul`
   }
 `;
 
-const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = ({
-  children,
-  current
-}) => {
+const Branch: FC<PropsWithChildren<{ current: DirItem }>> = ({ children, current }) => {
   const { directories: allSubDirs } = useDirTreeStore();
-  const [subDirs, setSubDirs] = useState<DirItem[]>([]);
+  const subDirs = useDirTreeStore(subDirectoriesSelector(current.id));
   const isCurrentExpanded = useDirTreeStore(isExpandedSelector(current.id));
   const expend = useDirTreeStore.use.expandDir();
   const fold = useDirTreeStore.use.foldDir();
@@ -44,18 +42,24 @@ const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = (
   const storeFiles = useFileListStore.use.updateFiles();
   const ebus = useContext<EventEmitter>(EventBusContext);
 
-  useMount(() => {
-    if (isCurrentExpanded) {
-      setSubDirs(selectDirectories(current.id)(useDirTreeStore.getState().directories));
+  useLifecycles(
+    () => {
+      ebus.addListener(`expand:${current.id}`, () => {
+        expend(current.id);
+        loadSubDirectories(current);
+      });
+    },
+    () => {
+      ebus.removeAllListeners(`expand:${current.id}`);
     }
-  });
+  );
+
   const handleExpandAction = useCallback(async () => {
     try {
       if (isCurrentExpanded) {
         fold(current.id);
       } else {
         await loadSubDirectories(current);
-        setSubDirs(selectDirectories(current.id)(useDirTreeStore.getState().directories));
         expend(current.id);
       }
     } catch (e) {
@@ -117,13 +121,16 @@ const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = (
 
 export const DirTree: FC = () => {
   const roots = useDirTreeStore(currentRootsSelector());
-  const { focused, focus, unfocus, selected } = useDirTreeStore();
+  const { focused, focus, unfocus, selected, foldDir } = useDirTreeStore();
   const [viewRef, { width }] = useMeasure();
+  const ebus = useContext<EventEmitter>(EventBusContext);
 
   const handleFocusAction = useCallback(() => {
     if (isNil(focused) && not(isNil(selected))) {
+      ebus.emit(`expand:${selected}`);
       focus(selected);
     } else {
+      foldDir(focused.id);
       unfocus();
     }
   }, [focused, selected]);
