@@ -4,7 +4,7 @@ import { ActionIcon, Box, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconEye, IconSquareMinus, IconSquarePlus } from '@tabler/icons-react';
 import { invoke } from '@tauri-apps/api';
-import { equals, isEmpty, isNil, length, map, not } from 'ramda';
+import { equals, isEmpty, isNil, map, not } from 'ramda';
 import { FC, PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { useMeasure, useMount } from 'react-use';
 import { EventBusContext } from '../EventBus';
@@ -69,7 +69,6 @@ const Branch: FC<PropsWithChildren<{ current: DirItem; expanded: boolean }>> = (
     try {
       selectDir(current.id);
       const files = await invoke('scan_directory', { target: current.path });
-      console.log('[debug]获取到文件个数：', length(files));
       storeFiles(files);
       ebus.emit('reset_views');
     } catch (e) {
@@ -122,7 +121,6 @@ export const DirTree: FC = () => {
   const [viewRef, { width }] = useMeasure();
 
   const handleFocusAction = useCallback(() => {
-    console.log('[debug]focus action: ', focused, selected);
     if (isNil(focused) && not(isNil(selected))) {
       focus(selected);
     } else {
