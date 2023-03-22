@@ -48,8 +48,12 @@ pub async fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
         if !entry.path().is_file() {
             continue;
         }
-        let (width, height) = image::image_dimensions(entry.path())
-            .map_err(|_e| format!("读取图片文件 {} 元信息失败。", entry.path().display()))?;
+        let image_detect_result = image::image_dimensions(entry.path());
+        if image_detect_result.is_err() {
+            println!("读取图片文件 {} 元信息失败。", entry.path().display());
+            continue;
+        }
+        let (width, height) = image_detect_result.unwrap();
         let file_hash_id = entry
             .path()
             .to_str()
@@ -60,20 +64,27 @@ pub async fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
         let filename = entry
             .path()
             .file_name()
-            .ok_or(String::from("不能获取到文件名。"))?
-            .to_owned()
-            .into_string()
-            .unwrap();
+            .ok_or(String::from("不能获取到文件名。"))
+            .map(ToOwned::to_owned)
+            .map(|s| s.into_string().unwrap());
+        if filename.is_err() {
+            println!("不能获取到文件 {} 文件名。", entry.path().display());
+            continue;
+        }
         let path = entry
             .path()
             .clone()
             .to_str()
-            .ok_or(String::from("不能获取到文件路径。"))?
-            .to_string();
+            .ok_or(String::from("不能获取到文件路径。"))
+            .map(ToString::to_string);
+        if path.is_err() {
+            println!("不能获取到文件 {} 路径。", entry.path().display());
+            continue;
+        }
         file_items.push(FileItem {
             id: file_hash_id,
-            filename,
-            path,
+            filename: filename.unwrap(),
+            path: path.unwrap(),
             height,
             width,
         });
