@@ -74,14 +74,13 @@ export const FileList: FC = () => {
   return (
     <Box
       w="100%"
-      h="100%"
       pl={4}
       sx={{ flexGrow: 1, overflowY: 'auto', contain: 'strict', overflowX: 'hidden' }}
       ref={parentRef}
     >
       {!isEmpty(files) && (
         <Virtuoso
-          style={{ height: parentHeight }}
+          style={{ height: parentHeight - 36 }}
           totalCount={filesCount}
           ref={listRef}
           itemContent={index => (
