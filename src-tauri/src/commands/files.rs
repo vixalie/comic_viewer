@@ -4,12 +4,21 @@ use std::{
 };
 
 use mountpoints::mountinfos;
+use regex::Regex;
 use serde::Serialize;
 use tauri::Runtime;
 
 use crate::utils;
 
-#[derive(Debug, Clone, Serialize)]
+fn compute_all_digits(text: &str) -> usize {
+    let re = Regex::new(r#"\d+"#).unwrap();
+    re.find_iter(&["a", text, "0"].join(" "))
+        .map(|b| b.as_str())
+        .map(|b| usize::from_str_radix(b, 10).unwrap_or(0))
+        .sum::<usize>()
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct FileItem {
     pub id: String,
     pub filename: String,
@@ -18,12 +27,36 @@ pub struct FileItem {
     pub width: u32,
 }
 
-#[derive(Debug, Clone, Serialize)]
+impl PartialOrd for FileItem {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let this_digit = compute_all_digits(&self.filename);
+        let other_digit = compute_all_digits(&other.filename);
+        if this_digit == other_digit {
+            self.filename.partial_cmp(&other.filename)
+        } else {
+            this_digit.partial_cmp(&other_digit)
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct DirItem {
     pub id: String,
     pub dirname: String,
     pub path: String,
     pub root: bool,
+}
+
+impl PartialOrd for DirItem {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let this_digit = compute_all_digits(&self.dirname);
+        let other_digit = compute_all_digits(&other.dirname);
+        if this_digit == other_digit {
+            self.dirname.partial_cmp(&other.dirname)
+        } else {
+            this_digit.partial_cmp(&other_digit)
+        }
+    }
 }
 
 fn is_hidden(entry: &DirEntry) -> bool {
@@ -92,7 +125,7 @@ pub async fn scan_directory(target: String) -> Result<Vec<FileItem>, String> {
             width,
         });
     }
-    file_items.sort_by(|a, b| a.filename.partial_cmp(&b.filename).unwrap());
+    file_items.sort_by(|a, b| a.partial_cmp(&b).unwrap());
 
     Ok(file_items)
 }
@@ -193,7 +226,7 @@ pub async fn scan_for_child_dirs<R: Runtime>(
             root: false,
         });
     }
-    child_dirs.sort_by(|a, b| a.dirname.partial_cmp(&b.dirname).unwrap());
+    child_dirs.sort_by(|a, b| a.partial_cmp(&b).unwrap());
     Ok(child_dirs)
 }
 
