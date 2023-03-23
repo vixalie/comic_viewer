@@ -123,6 +123,7 @@ export const DirTree: FC = () => {
   const roots = useDirTreeStore(currentRootsSelector());
   const { focused, focus, unfocus, selected, foldDir } = useDirTreeStore();
   const [viewRef, { width }] = useMeasure();
+  const storeFiles = useFileListStore.use.updateFiles();
   const ebus = useContext<EventEmitter>(EventBusContext);
 
   const handleFocusAction = useCallback(() => {

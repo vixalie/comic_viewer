@@ -15,7 +15,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             commands::prelude::scan_directory,
             commands::prelude::show_drives,
-            commands::prelude::scan_for_child_dirs
+            commands::prelude::scan_for_child_dirs,
+            commands::prelude::rename_file
         ])
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();

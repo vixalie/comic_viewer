@@ -1,4 +1,7 @@
-use std::{fs::DirEntry, path::Path};
+use std::{
+    fs::{self, DirEntry},
+    path::{Path, PathBuf},
+};
 
 use mountpoints::mountinfos;
 use serde::Serialize;
@@ -192,4 +195,18 @@ pub async fn scan_for_child_dirs<R: Runtime>(
     }
     child_dirs.sort_by(|a, b| a.dirname.partial_cmp(&b.dirname).unwrap());
     Ok(child_dirs)
+}
+
+#[tauri::command]
+pub async fn rename_file<R: Runtime>(
+    _app: tauri::AppHandle<R>,
+    _window: tauri::Window<R>,
+    store_path: String,
+    origin_name: String,
+    new_name: String,
+) -> Result<(), String> {
+    let origin_file = PathBuf::from(store_path.clone()).join(origin_name);
+    let new_file = PathBuf::from(store_path).join(new_name);
+    fs::rename(origin_file, new_file).map_err(|e| format!("重命名问文件失败，{}", e))?;
+    Ok(())
 }
