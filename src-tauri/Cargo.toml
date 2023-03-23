@@ -1,6 +1,6 @@
 [package]
 name = "comic_viewer"
-version = "0.2.5"
+version = "0.2.6"
 description = "漫画、条漫简易阅读器"
 authors = ["Khadgar"]
 license = "MIT"

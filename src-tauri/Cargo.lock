@@ -326,7 +326,7 @@ dependencies = [
 
 [[package]]
 name = "comic_viewer"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "chrono",
