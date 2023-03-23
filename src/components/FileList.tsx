@@ -27,8 +27,7 @@ export const FileList: FC = () => {
     let firstActivedIndex = indexOf(firstActived, pluck('filename', files));
     listRef.current?.scrollToIndex({
       index: firstActivedIndex,
-      align: 'center',
-      behavior: 'auto'
+      align: 'center'
     });
   }, [activeFiles]);
 

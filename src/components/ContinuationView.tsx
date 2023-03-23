@@ -25,7 +25,7 @@ export const ContinuationView: FC = () => {
   useEffect(() => {
     ebus?.addListener('navigate_offset', ({ filename }) => {
       let index = indexOf(filename, pluck('filename', files));
-      virtualListRef.current?.scrollToIndex({ index, align: 'start', behavior: 'smooth' });
+      virtualListRef.current?.scrollToIndex({ index, align: 'start' });
     });
     ebus?.addListener('reset_views', () => {
       virtualListRef.current?.scrollTo({ top: 0 });
