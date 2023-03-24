@@ -20,8 +20,8 @@ pub fn update_window_title_with_app<R: Runtime>(
     ext: Option<String>,
 ) -> anyhow::Result<()> {
     let app_name = match app {
-        AppHold::Instance(app) => app.package_info().name.clone(),
-        AppHold::Handle(app) => app.package_info().name.clone(),
+        AppHold::Instance(app) => app.config().tauri.windows[0].title.clone(),
+        AppHold::Handle(app) => app.config().tauri.windows[0].title.clone(),
     };
     if let Some(ext) = ext {
         window.set_title(&format!("{} - {}", app_name, ext))?;
